@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2563eb">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Kelas Modern</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #f8fafc;
+            --accent: #3b82f6;
+            --text: #1e293b;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--secondary);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+        }
+
+        /* Sidebar */
+        nav {
+            width: 250px;
+            background: var(--primary);
+            height: 100vh;
+            color: white;
+            padding: 20px;
+            position: fixed;
+        }
+
+        nav h2 { font-size: 1.5rem; margin-bottom: 30px; }
+
+        nav ul { list-style: none; padding: 0; }
+
+        nav li {
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        nav li:hover { background: var(--accent); }
+
+        /* Main Content */
+        main {
+            margin-left: 280px;
+            padding: 40px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+
+        label { display: block; margin-bottom: 5px; font-weight: 600; }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button.btn-danger { background: var(--danger); }
+        button.btn-warning { background: var(--warning); margin-right: 5px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th { background-color: #f1f5f9; }
+
+        .hidden { display: none; }
+
+        .badge-pending { background: #fee2e2; color: #991b1b; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
+
+        /* Badge hari */
+        .badge-hari {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .hari-Senin    { background: #dbeafe; color: #1d4ed8; }
+        .hari-Selasa   { background: #d1fae5; color: #065f46; }
+        .hari-Rabu     { background: #fef9c3; color: #92400e; }
+        .hari-Kamis    { background: #ede9fe; color: #5b21b6; }
+        .hari-Jumat    { background: #fee2e2; color: #991b1b; }
+
+        /* ===== LOGIN PAGE ===== */
+        #loginPage {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        #loginPage.hidden { display: none; }
+
+        .login-box {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 36px;
+            width: 100%;
+            max-width: 380px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .login-logo .logo-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 1.8rem;
+        }
+
+        .login-logo h2 {
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin: 0 0 4px;
+        }
+
+        .login-logo p {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .login-group {
+            margin-bottom: 16px;
+        }
+
+        .login-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 11px 42px 11px 14px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+            outline: none;
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+
+        .toggle-pw {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1rem;
+            color: #94a3b8;
+            user-select: none;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .toggle-pw:hover { color: var(--primary); }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: opacity 0.2s, transform 0.1s;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-login:hover  { opacity: 0.92; }
+        .btn-login:active { transform: scale(0.98); }
+
+        .login-error {
+            background: #fee2e2;
+            color: #b91c1c;
+            border-radius: 7px;
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            display: none;
+            text-align: center;
+        }
+
+        /* Logout button di sidebar */
+        .btn-logout {
+            width: 100%;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1.5px solid rgba(255,255,255,0.3);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: background 0.2s;
+        }
+        .btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+        .nav-user {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HALAMAN LOGIN ===== -->
+    <div id="loginPage">
+        <div class="login-box">
+            <div class="login-logo">
+                
+                <h2>Si-Kelas</h2>
+                <p>Sistem Manajemen Kelas Modern</p>
+            </div>
+
+            <div class="login-group">
+                <label>Username</label>
+                <div class="input-wrap">
+                    <input type="text" id="inputUser" placeholder="Masukkan username"
+                        onkeydown="if(event.key==='Enter') doLogin()">
+                </div>
+            </div>
+
+            <div class="login-group">
+                <label>Password</label>
+                <div class="input-wrap">
+                    <input type="password" id="inputPass" placeholder="Masukkan password"
+                        onkeydown="if(event.key==='Enter') doLogin()">
+                    <button class="toggle-pw" onclick="togglePassword()" title="Tampilkan/Sembunyikan">👁️</button>
+                </div>
+            </div>
+
+            <button class="btn-login" onclick="doLogin()">Masuk</button>
+            <div class="login-error" id="loginError">❌ Username atau password salah!</div>
+        </div>
+    </div>
+
+    <nav>
+        <h2>Si-Kelas</h2>
+        <div class="nav-user" id="navUser"></div>
+        <ul>
+            <li onclick="showSection('pelajaran')">Jadwal Pelajaran</li>
+            <li onclick="showSection('piket')">Jadwal Piket</li>
+            <li onclick="showSection('absensi')">Absensi Siswa</li>
+            <li onclick="showSection('pr')">Daftar PR / Tugas</li>
+        </ul>
+        <button class="btn-logout" onclick="doLogout()">🚪 Keluar</button>
+    </nav>
+
+    <main>
+        <section id="pelajaran">
+            <h1>Jadwal Pelajaran & Guru</h1>
+            <div class="card">
+                <!-- TAMBAHAN: Dropdown Hari -->
+                <div class="form-group">
+                    <label>Hari</label>
+                    <select id="hariPelajaran">
+                        <option>Senin</option>
+                        <option>Selasa</option>
+                        <option>Rabu</option>
+                        <option>Kamis</option>
+                        <option>Jumat</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nama Guru</label>
+                    <input type="text" id="namaGuru" placeholder="Contoh: Bpk. Budi">
+                </div>
+                <div class="form-group">
+                    <label>Mata Pelajaran</label>
+                    <input type="text" id="mapel" placeholder="Contoh: Matematika">
+                </div>
+                <div class="form-group">
+                    <label>Jam Pelajaran</label>
+                    <input type="time" id="jamMulai"> s/d <input type="time" id="jamSelesai">
+                </div>
+                <button onclick="simpanPelajaran()">Tambah Jadwal</button>
+            </div>
+
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Hari</th>
+                            <th>Guru</th>
+                            <th>Mapel</th>
+                            <th>Waktu</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelPelajaran"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="piket" class="hidden">
+            <h1>Jadwal Piket Kebersihan</h1>
+            <div class="card">
+                <div class="form-group">
+                    <label>Hari</label>
+                    <select id="hariPiket">
+                        <option>Senin</option><option>Selasa</option>
+                        <option>Rabu</option><option>Kamis</option><option>Jumat</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nama Siswa</label>
+                    <input type="text" id="namaPiket" placeholder="Nama-nama siswa...">
+                </div>
+                <button onclick="simpanPiket()">Tambah Piket</button>
+            </div>
+            <div id="listPiket" class="card"></div>
+        </section>
+
+        <section id="absensi" class="hidden">
+            <h1>Absensi Harian</h1>
+            <div class="card">
+                <div class="form-group">
+                    <label>Nama Siswa</label>
+                    <input type="text" id="namaAbsen">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="statusAbsen">
+                        <option value="Hadir">Hadir</option>
+                        <option value="Sakit">Sakit</option>
+                        <option value="Izin">Izin</option>
+                        <option value="Alfa">Alfa</option>
+                    </select>
+                </div>
+                <button onclick="simpanAbsen()">Catat Absen</button>
+            </div>
+            <div class="card">
+                <table id="tabelAbsensi">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Status</th>
+                            <th>Tanggal</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bodyAbsen"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="pr" class="hidden">
+            <h1>Daftar PR & Tugas</h1>
+            <div class="card">
+                <div class="form-group">
+                    <label>Mata Pelajaran</label>
+                    <input type="text" id="mapelPR" placeholder="Contoh: B.indo">
+                </div>
+                <div class="form-group">
+                    <label>Deskripsi Tugas</label>
+                    <textarea id="deskripsiPR" rows="2" placeholder="Contoh: Tulis Materi halaman 20-25"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Tenggat Waktu (Deadline)</label>
+                    <input type="date" id="deadlinePR">
+                </div>
+                <button onclick="simpanPR()">Tambah Tugas</button>
+            </div>
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mapel</th>
+                            <th>Tugas</th>
+                            <th>Deadline</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelPR"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // ===== LOGIN =====
+        const CREDENTIALS = { username: 'Admin', password: 'Admin 123' };
+
+        function cekLogin() {
+            const sesi = sessionStorage.getItem('loggedIn');
+            if (sesi === 'true') {
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('navUser').textContent = '👤 Admin';
+            }
+        }
+
+        function doLogin() {
+            const user = document.getElementById('inputUser').value.trim();
+            const pass = document.getElementById('inputPass').value;
+            const errEl = document.getElementById('loginError');
+
+            if (user === CREDENTIALS.username && pass === CREDENTIALS.password) {
+                sessionStorage.setItem('loggedIn', 'true');
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('navUser').textContent = '👤 ' + user;
+                errEl.style.display = 'none';
+            } else {
+                errEl.style.display = 'block';
+                document.getElementById('inputPass').value = '';
+                document.getElementById('inputPass').focus();
+            }
+        }
+
+        function doLogout() {
+            if (confirm('Yakin ingin keluar?')) {
+                sessionStorage.removeItem('loggedIn');
+                document.getElementById('loginPage').classList.remove('hidden');
+                document.getElementById('inputUser').value = '';
+                document.getElementById('inputPass').value = '';
+                document.getElementById('loginError').style.display = 'none';
+                document.getElementById('inputUser').focus();
+            }
+        }
+
+        function togglePassword() {
+            const inp = document.getElementById('inputPass');
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+        }
+
+        // Jalankan cek sesi saat halaman dibuka
+        cekLogin();
+
+        // Logika Perpindahan Halaman
+        function showSection(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        // --- CRUD JADWAL PELAJARAN ---
+        let dataPelajaran = JSON.parse(localStorage.getItem('pelajaran')) || [];
+
+        function simpanPelajaran() {
+            const item = {
+                id: Date.now(),
+                hari: document.getElementById('hariPelajaran').value, // TAMBAHAN
+                guru: document.getElementById('namaGuru').value,
+                mapel: document.getElementById('mapel').value,
+                waktu: `${document.getElementById('jamMulai').value} - ${document.getElementById('jamSelesai').value}`
+            };
+            dataPelajaran.push(item);
+            // Urutkan berdasarkan hari
+            const urutanHari = ['Senin','Selasa','Rabu','Kamis','Jumat'];
+            dataPelajaran.sort((a, b) => urutanHari.indexOf(a.hari) - urutanHari.indexOf(b.hari));
+            localStorage.setItem('pelajaran', JSON.stringify(dataPelajaran));
+            renderPelajaran();
+        }
+
+        function renderPelajaran() {
+            const tabel = document.getElementById('tabelPelajaran');
+            tabel.innerHTML = dataPelajaran.map(p => `
+                <tr>
+                    <td><span class="badge-hari hari-${p.hari}">${p.hari || '-'}</span></td>
+                    <td>${p.guru}</td>
+                    <td>${p.mapel}</td>
+                    <td>${p.waktu}</td>
+                    <td><button class="btn-danger" onclick="hapusPelajaran(${p.id})">Hapus</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function hapusPelajaran(id) {
+            dataPelajaran = dataPelajaran.filter(p => p.id !== id);
+            localStorage.setItem('pelajaran', JSON.stringify(dataPelajaran));
+            renderPelajaran();
+        }
+
+        // --- CRUD PIKET ---
+        let dataPiket = JSON.parse(localStorage.getItem('piket')) || [];
+        function simpanPiket() {
+            const item = {
+                id: Date.now(),
+                hari: document.getElementById('hariPiket').value,
+                nama: document.getElementById('namaPiket').value
+            };
+            dataPiket.push(item);
+            localStorage.setItem('piket', JSON.stringify(dataPiket));
+            renderPiket();
+        }
+        function renderPiket() {
+            const list = document.getElementById('listPiket');
+            list.innerHTML = dataPiket.map(p => `
+                <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
+                    <strong>${p.hari}:</strong> ${p.nama} 
+                    <button class="btn-danger" style="padding: 5px 10px; float: right;" onclick="hapusPiket(${p.id})">Hapus</button>
+                </div>
+            `).join('');
+        }
+        function hapusPiket(id) {
+            dataPiket = dataPiket.filter(p => p.id !== id);
+            localStorage.setItem('piket', JSON.stringify(dataPiket));
+            renderPiket();
+        }
+
+        // --- CRUD ABSENSI ---
+        let dataAbsen = JSON.parse(localStorage.getItem('absen')) || [];
+        function simpanAbsen() {
+            const item = {
+                id: Date.now(),
+                nama: document.getElementById('namaAbsen').value,
+                status: document.getElementById('statusAbsen').value,
+                tgl: new Date().toLocaleDateString('id-ID')
+            };
+            dataAbsen.push(item);
+            localStorage.setItem('absen', JSON.stringify(dataAbsen));
+            renderAbsen();
+        }
+        function renderAbsen() {
+            const body = document.getElementById('bodyAbsen');
+            body.innerHTML = dataAbsen.map(a => `
+                <tr>
+                    <td>${a.nama}</td>
+                    <td style="color: ${a.status === 'Hadir' ? 'green' : 'red'}">${a.status}</td>
+                    <td>${a.tgl}</td>
+                    <td><button class="btn-danger" onclick="hapusAbsen(${a.id})">Hapus</button></td>
+                </tr>
+            `).join('');
+        }
+        function hapusAbsen(id) {
+            dataAbsen = dataAbsen.filter(a => a.id !== id);
+            localStorage.setItem('absen', JSON.stringify(dataAbsen));
+            renderAbsen();
+        }
+
+        // --- CRUD PR / TUGAS ---
+        let dataPR = JSON.parse(localStorage.getItem('pr')) || [];
+        function simpanPR() {
+            const item = {
+                id: Date.now(),
+                mapel: document.getElementById('mapelPR').value,
+                deskripsi: document.getElementById('deskripsiPR').value,
+                deadline: document.getElementById('deadlinePR').value
+            };
+            if(!item.mapel || !item.deadline) return alert("Mohon isi Mapel dan Deadline!");
+            dataPR.push(item);
+            localStorage.setItem('pr', JSON.stringify(dataPR));
+            renderPR();
+            document.getElementById('mapelPR').value = '';
+            document.getElementById('deskripsiPR').value = '';
+        }
+        function renderPR() {
+            const tabel = document.getElementById('tabelPR');
+            tabel.innerHTML = dataPR.map(p => `
+                <tr>
+                    <td><strong>${p.mapel}</strong></td>
+                    <td>${p.deskripsi}</td>
+                    <td><span class="badge-pending">${p.deadline}</span></td>
+                    <td><button class="btn-danger" onclick="hapusPR(${p.id})">Hapus</button></td>
+                </tr>
+            `).join('');
+        }
+        function hapusPR(id) {
+            dataPR = dataPR.filter(p => p.id !== id);
+            localStorage.setItem('pr', JSON.stringify(dataPR));
+            renderPR();
+        }
+
+        // Inisialisasi awal
+        renderPelajaran();
+        renderPiket();
+        renderAbsen();
+        renderPR();
+    </script>
+</body>
+</html>
